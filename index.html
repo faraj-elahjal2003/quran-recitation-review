@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تصحيح تلاوات القرآن الكريم</title>
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--ink:#1f2a24;--mute:#6b756f;--line:#dcd8cc;--g:#2f6b4a;--gd:#234f37;--warn:#c76a00;--bad:#b3261e;--ok:#2e7d32;--amb:#d99a00}
+@media(prefers-color-scheme:dark){:root{--bg:#141a17;--card:#1d2621;--ink:#e8eee9;--mute:#9aa8a0;--line:#33413a;--g:#4f9d73;--gd:#3f8461}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 "Segoe UI",Tahoma,"Noto Naskh Arabic","Noto Sans Arabic",system-ui,sans-serif;padding-bottom:96px}
+.wrap{max-width:720px;margin:0 auto;padding:12px}
+.hidden{display:none!important}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+h1{font-size:1.4rem;margin:8px 0}h3{font-size:1rem;margin:0 0 6px}
+.hint{color:var(--mute);font-size:.85rem;margin:0 0 8px}
+button,select,input,textarea{font:inherit;color:inherit}
+.btn{min-height:52px;padding:10px 16px;border-radius:12px;border:1px solid var(--g);background:var(--card);color:var(--g);font-weight:700;cursor:pointer}
+.btn.pri{background:var(--g);color:#fff}.btn.bad{border-color:var(--bad);color:var(--bad)}
+.btn:disabled{opacity:.4}
+.full{width:100%}
+input[type=text],textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card)}
+textarea{min-height:110px}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line)}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%;background:var(--g);width:0}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1 1 0;min-width:90px}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.ch{min-height:48px;padding:8px 14px;border-radius:24px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;flex:1 1 auto}
+.ch.on{background:var(--g);border-color:var(--g);color:#fff;font-weight:700}
+.ch.on.neg{background:var(--bad);border-color:var(--bad)}
+.banner{border-radius:12px;padding:10px 12px;margin:8px 0;font-size:.9rem}
+.banner.w{background:#fff3e0;color:#7a4300;border:1px solid #ffcc80}
+.banner.e{background:#fdecea;color:#7a1a14;border:1px solid #f5b5b0}
+.banner.i{background:#e8f3ec;color:#1d4a32;border:1px solid #b7d8c4}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--mute);font-size:.9rem}
+.meta b{color:var(--ink);direction:ltr;unicode-bidi:embed}
+.fname{direction:ltr;text-align:center;font-size:1.3rem;font-weight:700;margin:4px 0}
+audio{width:100%;margin:8px 0}
+.foot{position:fixed;inset:auto 0 0 0;background:var(--bg);border-top:1px solid var(--line);padding:8px;padding-bottom:max(8px,env(safe-area-inset-bottom));z-index:6}
+.foot .in{max-width:720px;margin:0 auto;display:flex;gap:8px}
+.foot .btn{flex:1}.foot .btn.pri{flex:1.6}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:12px;z-index:20;max-width:90%;text-align:center}
+dialog{border:0;border-radius:16px;padding:0;width:min(94vw,640px);max-height:86vh;background:var(--bg);color:var(--ink)}
+dialog::backdrop{background:#0008}
+.li{display:flex;gap:10px;align-items:center;width:100%;padding:10px;border:0;border-bottom:1px solid var(--line);background:none;text-align:right;cursor:pointer;min-height:48px}
+.li.cur{background:var(--card);font-weight:700}
+.dot{width:12px;height:12px;border-radius:50%;background:#aaa;flex:none}.dot.d{background:var(--ok)}.dot.p{background:var(--amb)}.dot.x{background:var(--bad)}
+ol{padding-inline-start:22px}
+.dd summary{min-height:48px;padding:12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;list-style:none;background:var(--card)}
+.dd summary::after{content:"▾";float:left}
+.dd[open] summary{border-color:var(--g)}
+.ck{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 8px;border-bottom:1px solid var(--line)}
+.ck input{width:22px;height:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section id="app">
+  <div class="top">
+    <div style="display:flex;justify-content:space-between;gap:8px;font-size:.95rem"><span id="progTxt"></span><span id="posTxt"></span></div>
+    <div class="bar"><i id="progBar"></i></div>
+    <div class="row">
+      <button class="btn" id="bList">القائمة</button>
+      <button class="btn" id="bAudio">تحميل الملف (اختياري)</button>
+      <button class="btn pri" id="bExport">تنزيل Excel</button>
+    </div>
+    <input type="file" id="pickA" accept="audio/*,.m4a,.aac,.ogg,.wav,.wma,.mp3,.opus" multiple hidden>
+  </div>
+  <div id="warn"></div>
+  <div class="card" id="head"></div>
+  <div class="card" id="audioBox"></div>
+  <div id="form"></div>
+</section>
+</div>
+
+<div class="foot hidden" id="foot"><div class="in">
+  <button class="btn" id="bPrev">→ السابق</button>
+  <button class="btn pri" id="bSave">حفظ التقييم</button>
+  <button class="btn" id="bNext">التالي ←</button>
+</div></div>
+
+<dialog id="dlg"><div style="padding:12px">
+  <div class="row" style="margin-bottom:8px">
+    <input type="text" id="q" placeholder="بحث: رقم التسجيل أو اسم الملف أو القارئ">
+    <select id="flt"><option value="all">الكل</option><option value="todo">غير مكتمل</option><option value="done">مكتمل</option><option value="flag">ملغي / مشكل</option></select>
+  </div>
+  <div id="items" style="max-height:60vh;overflow:auto"></div>
+  <button class="btn full" id="bClose" style="margin-top:8px">إغلاق</button>
+</div></dialog>
+
+<script src="jszip.min.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
